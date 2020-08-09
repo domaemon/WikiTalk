@@ -1,0 +1,14 @@
+.round_button
+{
+//    border-radius:100%;
+}
+
+* {
+    text-shadow: none !important;
+    box-shadow: none;
+    -webkit-box-shadow: none !important;
+}
+
+.ui-page {
+//    -webkit-backface-visibility: hidden;
+}
