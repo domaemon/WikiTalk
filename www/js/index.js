@@ -27,6 +27,21 @@ function onDeviceReady() {
 
     console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
     app.init();
+};
+
+function showLoading() {
+    $.mobile.loading( "show", { text: 'Fetching...', textVisible: true, theme: 'b' } );
+    // disable main button
+    $("#mainbutton").addClass('ui-disabled');
+    $("#settings_button").addClass('ui-disabled');
+
+};
+
+function hideLoading() {
+    $.mobile.loading( "hide" );
+    // enable main button
+    $("#mainbutton").removeClass('ui-disabled');
+    $("#settings_button").removeClass('ui-disabled');
 }
 
 function langToLocale(lang) {
@@ -52,6 +67,9 @@ function langToLocale(lang) {
     case "ko":
 	locale = "ko-KR";
 	break;
+    case "simple":
+	locale = "en-GB";
+	break;
     default:
 	break;
     }
@@ -65,7 +83,7 @@ var app = {
 	document.addEventListener("backbutton", this.onBackKeyDown, false);
 	
 	$("#mainbutton").on("vclick", app.actionWikiTalk);
-	$("#lang_mode, #continuous_mode, #random_mode, #voice_speed_slow, #voice_speed_normal, #voice_speed_fast").change(app.settingsChanged);
+	$("#lang_mode, #continuous_mode, #random_mode, #voice_speed").change(app.settingsChanged);
 
 	if (window.localStorage.getItem("langMode")) {
             console.log(app.langMode);
@@ -89,22 +107,8 @@ var app = {
 	if (window.localStorage.getItem("voiceSpeed")) {
 	    app.voiceSpeed = window.localStorage.getItem("voiceSpeed");
 	    // update the element
-	    switch (app.voiceSpeed) {
-	    case app.VOICE_SPEED_SLOW:
-		console.log("slow");
-		$("#voice_speed_slow").prop("checked", true);
-		break;
-	    case app.VOICE_SPEED_NORMAL:
-		console.log("normal");
-		$("#voice_speed_normal").prop("checked", true);
-		break;
-	    case app.VOICE_SPEED_FAST:
-		console.log("fast");
-		$("#voice_speed_fast").prop("checked", true);
-	    break;
-	    default:
-		console.log("not recognized");
-	    }
+	    $('#voice_speed').val(app.voiceSpeed);
+	    console.log(app.voiceSpeed);
 	}
 	
 	// UPDATE STATE
@@ -113,7 +117,7 @@ var app = {
 	if (app.state == "NO_CONNECTION_STATE") {
 	    app.showInitScreen("Connect to network and try again.");
 	} else {
-	    app.showInitScreen("Welcome, press the above image to start the Talk.");
+	    app.showInitScreen("Press the image to start the Talk.");
 	}
     },
     showInitScreen: function(message) {
@@ -160,27 +164,31 @@ var app = {
 		app.showInitScreen("Connect to network and try again.");
 	    } else {
 		app.state = "PLAY_STATE";
-		$.mobile.loading( "show", { text: 'Fetching...', textVisible: true, theme: 'b' } );
 		app.fetchAndReadArticle();
 	    }
 	    break;
 	case "PLAY_STATE":
 	    app.state = "WAIT_STATE";
-
+	    TTS.stop();
+	    /*
 	    TTS.speak({
-		text: ""
+		text: "",
+		locale: app.locale,
+		rate: app.voiceSpeed,
             }, function () {
-	    }, function (reason) {
+		app.readArticle2(); // reading ended.
+            }, function (reason) {
 		app.fail(reason);
-	    });	
-	    
+            });
+	    */
+
 	    navigator.notification.beep(1);
-	    app.showInitScreen("Finished reading an article.");
+	    app.showInitScreen("Press the image to start the Talk.");
 
 	    break;
 	default:
 	    app.state = "WAIT_STATE";
-	    app.showInitScreen("Unknown Error");
+	    app.showInitScreen("Unknown Error.");
 	    break;
 	}
     },
@@ -189,6 +197,7 @@ var app = {
     },
     fetchArticle1A: function() { // Fetching Random Article Titles
 	console.log("fetchArticle1A");
+	showLoading();
 	
 	app.queryData = {
 	    "action": "query", // query
@@ -203,6 +212,7 @@ var app = {
     },
     fetchArticle1B: function(data) { // Fetching Related Article from Titles (Continuous)
 	console.log("fetchArticle1B");
+	showLoading();
 
 	app.queryData = {
 	    "action": "query", // query
@@ -239,6 +249,7 @@ var app = {
 	    "explaintext": true,
 	    "exsectionformat": "plain",
 	    "exintro": true,
+	    "exsentences": 10,
 	    "titles": app.title,
 	    "indexpageids": true
 	};
@@ -251,9 +262,8 @@ var app = {
     readArticle1: function(data) { // prep for reading multi paragraphs.
 	console.log("readArticle1");
 	// console.log(JSON.stringify(data));
+	hideLoading();
 
-	$.mobile.loading( "hide" );
-	
 	var pageId = data.query.pageids[0];
 
 	if (pageId == -1) {
@@ -261,29 +271,51 @@ var app = {
 	    app.actionWikiTalk(); // PLAY_STATE to WAIT_STATE
 	}
 	
+	// app.title is already set in fetchArticle2
 	app.content = data.query.pages[pageId].extract;
 	app.showSpeakScreen(app.title, app.content);
+
+	console.log(app.voiceSpeed);
 
 	TTS.speak({
 	    text: app.content,
 	    locale: app.locale,
-	    rate: app.voiceSpeed / 100 // devided by 100 - defaul value 80/100
-        }, function () {
+	    rate: app.voiceSpeed,
+        }).then(function () {
+	    console.log("Success");
 	    app.readArticle2(); // reading ended.
         }, function (reason) {
+            alert(reason);
+        });
+	/*
+	TTS.speak({
+	    text: app.content,
+	    locale: app.locale,
+	    rate: app.voiceSpeed,
+        }, function () {
+	    app.readArticle2(); // reading ended.
+	    console.log("AAA");
+        }, function (reason) {
 	    app.fail(reason);
-        });	
+        });
+	*/
     },
     readArticle2: function() { // reading finished.
 	if (app.continuousMode == "on") {
-	    app.fetchArticle1B();
+	    if (app.randomMode == "on") {
+		app.fetchArticle1A();
+	    } else {
+		app.fetchArticle1B();
+	    }
 	} else {
 	    app.actionWikiTalk(); // PLAY_STATE to WAIT_STATE
 	}
     },
     fail: function(reason) {
 	console.log("fail");
-	console.log(JSON.stringify(reason));
+	console.log(app.content);
+	console.log(app.locale);
+	console.log(app.voiceSpeed);
     },
     checkConnection: function() {
 	var networkState = navigator.connection.type;
@@ -307,15 +339,10 @@ var app = {
 
 	app.randomMode = $('#random_mode').val();
 	window.localStorage.setItem("randomMode", app.randomMode);
-
-        if ($("#voice_speed_slow").is(":checked")) {
-	    app.voiceSpeed = app.VOICE_SPEED_SLOW;
-        } else if ($("#voice_speed_normal").is(":checked")) {
-	    app.voiceSpeed = app.VOICE_SPEED_NORMAL;
-	} else if ($("#voice_speed_fast").is(":checked")) {
-	    app.voiceSpeed = app.VOICE_SPEED_FAST;
-	}
+	
+	app.voiceSpeed = $("#voice_speed").val();
 	window.localStorage.setItem("voiceSpeed", app.voiceSpeed);
+	console.log(app.voiceSpeed);
     },
     onQuit: function(buttonIndex) {
 	if (buttonIndex == 1) {
@@ -347,10 +374,7 @@ var app = {
     locale: "en-GB",
     randomMode: "on",
     continuousMode: "on",
-    VOICE_SPEED_SLOW: "80",
-    VOICE_SPEED_NORMAL: "90",
-    VOICE_SPEED_FAST: "100",
-    voiceSpeed: 90
+    voiceSpeed: 1.0
 };
 
 $('#wikitalk_console').focus(function() {
