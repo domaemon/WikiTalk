@@ -29,6 +29,35 @@ function onDeviceReady() {
     app.init();
 }
 
+function langToLocale(lang) {
+    switch (lang) {
+    case "en":
+	locale = "en-GB";
+	break;
+    case "zh":
+	locale = "zh-CN";
+	break;
+    case "de":
+	locale = "de-DE";
+	break;
+    case "fi":
+	locale = "fi-FI";
+	break;
+    case "fr":
+	locale = "fr-FR";
+	break;
+    case "ja":
+	locale = "ja-JP";
+	break;
+    case "ko":
+	locale = "ko-KR";
+	break;
+    default:
+	break;
+    }
+    return locale;
+};
+
 var app = {
     init: function() {
 	// domaemon
@@ -44,33 +73,7 @@ var app = {
             app.langMode = window.localStorage.getItem("langMode");
             $('#lang_mode').val(app.langMode);
 	    app.queryUrl = 'http://' + app.langMode + '.wikipedia.org/w/api.php';
-
-	    switch (app.langMode) {
-	    case "en":
-		app.locale = "en-GB";
-		break;
-	    case "zh":
-		app.locale = "zh-CN";
-		break;
-	    case "de":
-		app.locale = "de-DE";
-		break;
-	    case "fi":
-		app.locale = "fi-FI";
-		break;
-	    case "fr":
-		app.locale = "fr-FR";
-		break;
-	    case "ja":
-		app.locale = "ja-JP";
-		break;
-	    case "kr":
-		app.locale = "kr-KR";
-		break;
-	    default:
-		break;
-	    }
-	    console.log(app.langMode);
+	    app.locale = langToLocale(app.langMode);
 	}	
 	// reading the configuration
 	if (window.localStorage.getItem("continuousMode")) {
@@ -254,20 +257,16 @@ var app = {
 	var pageId = data.query.pageids[0];
 
 	if (pageId == -1) {
-	    navigator.notification.beep(1);
 	    app.showInitScreen("The page does not exist: " + app.title);
-
-	    return;
+	    app.actionWikiTalk(); // PLAY_STATE to WAIT_STATE
 	}
 	
 	app.content = data.query.pages[pageId].extract;
-	console.log(app.content);
-
 	app.showSpeakScreen(app.title, app.content);
 
 	TTS.speak({
 	    text: app.content,
-	    locale: app.langMode,
+	    locale: app.locale,
 	    rate: app.voiceSpeed / 100 // devided by 100 - defaul value 80/100
         }, function () {
 	    app.readArticle2(); // reading ended.
@@ -283,6 +282,7 @@ var app = {
 	}
     },
     fail: function(reason) {
+	console.log("fail");
 	console.log(JSON.stringify(reason));
     },
     checkConnection: function() {
@@ -299,6 +299,8 @@ var app = {
 
 	app.langMode = $('#lang_mode').val();
 	window.localStorage.setItem("langMode", app.langMode);
+	app.queryUrl = 'http://' + app.langMode + '.wikipedia.org/w/api.php';
+	app.locale = langToLocale(app.langMode);
 
 	app.continuousMode = $('#continuous_mode').val();
 	window.localStorage.setItem("continuousMode", app.continuousMode);
@@ -342,7 +344,7 @@ var app = {
     title: "Kyoto",
     status: "NO_CONNECTION_STATE",
     langMode: "en",
-    locale: "en_GB",
+    locale: "en-GB",
     randomMode: "on",
     continuousMode: "on",
     VOICE_SPEED_SLOW: "80",

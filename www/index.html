@@ -38,7 +38,7 @@
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
     <meta name="color-scheme" content="light dark">
     
-    <link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.3.1.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.5.min.css" />
     <link rel="stylesheet" type="text/css" href="css/wikitalk.css" />
     
     <title>WikiTalk</title>
@@ -50,7 +50,7 @@
       <div data-role="page" id="mainview">
 	
 	<div data-role="header">
-          <a data-role="button" id="settings_button" href="#settings" class="ui-btn-left" data-icon="gear" data-iconpos="left" >
+          <a data-role="button" id="settings_button" href="#settings" class="ui-btn-left ui-btn-b" data-icon="gear" data-iconpos="left" >
             Settings
           </a>
 	  <h1>WikiTalk</h1>
@@ -61,11 +61,16 @@
 	  <div id="deviceready" class="blink">
 	    <p><a href="#" id="mainbutton" data-role="button" class="round_button" data-theme="a"><img src="img/Wikipedia_logo_silver.png"></a></p>
 
-	    <div data-role="fieldcontain">
-	      <label for="wikitalk_console">
-		WikiTalk says:
-	      </label>
+	    <div id="wikitalk_console_container" data-role="fieldcontain">
 	      <textarea readonly id="wikitalk_console"></textarea>
+	    </div>
+
+	    <div id="wikitalk_title_container" data-role="fieldcontain">
+	      <label id="wikitalk_title">Title</label>
+	    </div>
+
+	    <div id="wikitalk_content_container" data-role="fieldcontain">
+	      <label id="wikitalk_content">Content</label>
 	    </div>
 	  </div>
 
@@ -77,19 +82,19 @@
       <div data-role="page" id="settings">
 	
 	<div data-role="header">
-          <a data-role="button" href="#popup_settings_help" data-rel="popup" data-transition="pop" class="ui-btn-right" data-icon="info" data-iconpos="left" >
+          <a data-role="button" href="#popup_settings_help" data-rel="popup" data-transition="pop" class="ui-btn-right ui-btn-b" data-icon="info" data-iconpos="left" >
             Help
           </a>
 	  <div data-role="popup" id="popup_settings_help" class="ui-btn-right"><!-- popup -->
 	    <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
-	    <h3>Summary Mode</h3>
-	    <p>When on, WikiTalks reads only the summary of the article. When off, WikiTalk reads all the paragraphs within the same article.</p>
+	    <h3>Language Preferencee</h3>
+	    <p>Set the language of your prefrence. It will be used to specify Wikipedia locale and also the speech language.</p>
 	    <h3>Continuous Mode</h3>
-	    <p>When on, WikiTalk continuously jumps to and reads the related articles. When off, WikiTalk reads only one article.</p>
+	    <p>When on, WikiTalk continuously jumps to and reads the articles. When off, WikiTalk reads only one article.</p>
 	    <h3>Random Mode</h3>
-	    <p>When on, WikiTalk randomly select the initial content for you. When off, WikiTalk asks you to voice the title of the article.</p>
+	    <p>When on, WikiTalk randomly selects the content for you. When off, WikiTalk continues to choose related topics. The initial topic will be chosen randomly regardless of the settings.</p>
 	    <h3>Voice Speed</h3>
-	    <p>You can set how fast WikiTalk reads. The default speed is Normal.</p> 
+	    <p>You can set how fast WikiTalk reads. The default speed is 1.0x.</p> 
 	  </div><!-- /popup -->
           <a data-role="button" href="#mainview" class="ui-btn-left" data-icon="arrow-l" data-iconpos="left" >
             Back
@@ -99,16 +104,18 @@
 	
 	<div data-role="content"><!-- content -->
 	  <h3>
-	    Summary Mode
+	    Language Preference
 	  </h3>
-	  <div data-role="fieldcontain">
-	    <select name="toggleswitch3" id="summary_mode" data-theme="" data-role="slider">
-	      <option value="off">
-		Off
-	      </option>
-	      <option value="on" selected>
-		On
-	      </option>
+	  <div class="ui-field-contain">
+	    <select name="select-native-1" id="lang_mode">
+              <option value="zh">Chinese</option>
+              <option value="en" selected>English</option>
+              <option value="fr">French</option>
+              <option value="fi">Finnish</option>
+              <option value="de">German</option>
+              <option value="ja">Japanese</option>
+              <option value="ko">Korean</Option>
+              <option value="simple">Simple English</option>
 	    </select>
 	  </div>
 
@@ -116,13 +123,9 @@
 	    Continuous Mode
 	  </h3>
 	  <div data-role="fieldcontain">
-	    <select name="toggleswitch4" id="continuous_mode" data-theme="" data-role="slider">
-	      <option value="off">
-		Off
-	      </option>
-	      <option value="on" selected>
-		On
-	      </option>
+	    <select name="flip-select" data-role="flipswitch" id="continuous_mode">
+	      <option value="off">Off</option>
+	      <option value="on" selected>On</option>
 	    </select>
 	  </div>
 	  
@@ -130,37 +133,30 @@
 	    Random Mode
 	  </h3>
 	  <div data-role="fieldcontain">
-	    <select name="toggleswitch4" id="random_mode" data-theme="" data-role="slider">
-	      <option value="off">
-		Off
-	      </option>
-	      <option value="on" selected>
-		On
-	      </option>
+	    <select name="flip-select" data-role="flipswitch" id="random_mode">
+	      <option value="off" selected>Off</option>
+	      <option value="on">On</option>
 	    </select>
 	  </div>
 	  
 	  <h3>
 	    Voice Speed
 	  </h3>
-	  <div data-role="fieldcontain">
-	    <fieldset data-role="controlgroup" data-type="horizontal">
-              <input type="radio" name="voice_speed" id="voice_speed_slow" />
-              <label for="voice_speed_slow"> Slow </label>
-
-              <input type="radio" name="voice_speed" id="voice_speed_normal" checked="checked" />
-              <label for="voice_speed_normal">Normal</label>
-	      
-              <input type="radio" name="voice_speed" id="voice_speed_fast" />
-              <label for="voice_speed_fast"> Fast </label>
-	    </fieldset>
+	  <div class="ui-field-contain">
+	    <select name="select-native-1" id="voice_speed">
+              <option value="0.5">0.5x</option>
+              <option value="0.75">0.75x</option>
+              <option value="1.0" selected>1.0x</option>
+              <option value="1.25">1.25x</option>
+              <option value="1.5">1.5x</option>
+	    </select>
 	  </div>
 	</div><!-- /content -->
       </div><!-- /page settings -->
     </div><!-- /app -->
 
-    <script src="js/jquery-1.9.1.min.js"></script>
-    <script src="js/jquery.mobile-1.3.1.min.js"></script>
+    <script src="js/jquery-2.0.0.min.js"></script>
+    <script src="js/jquery.mobile-1.4.5.min.js"></script>
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
   </body>
