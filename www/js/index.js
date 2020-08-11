@@ -67,7 +67,7 @@ function langToLocale(lang) {
     case "ko":
 	locale = "ko-KR";
 	break;
-    case "simple":
+    case "simple": // Experimental. Returns error often.
 	locale = "en-GB";
 	break;
     default:
@@ -90,7 +90,7 @@ var app = {
 	    
             app.langMode = window.localStorage.getItem("langMode");
             $('#lang_mode').val(app.langMode);
-	    app.queryUrl = 'http://' + app.langMode + '.wikipedia.org/w/api.php';
+	    app.queryUrl = 'https://' + app.langMode + '.wikipedia.org/w/api.php';
 	    app.locale = langToLocale(app.langMode);
 	}	
 	// reading the configuration
@@ -123,7 +123,7 @@ var app = {
     showInitScreen: function(message) {
 	console.log("showInitScreen");
 	
-	$("#mainbutton img").attr("src", "img/Wikipedia_logo_silver.png");
+	$("#mainbutton img").attr("src", "img/wikitalk_mainbutton_silver.png");
 	$("#mainbutton").button();
 	$("#wikitalk_console").text(message);
 
@@ -138,8 +138,7 @@ var app = {
     showSpeakScreen: function(title, content) {
 	console.log("showSpeakScreen");
 	
-
-	$("#mainbutton img").attr("src", "img/Wikipedia_logo_blue.png");
+	$("#mainbutton img").attr("src", "img/wikitalk_mainbutton_blue.png");
 	$("#mainbutton").button();
 	$("#wikitalk_console").text("PLAY_STATE"); // PLAY_STATE
 
@@ -286,6 +285,7 @@ var app = {
 	    app.readArticle2(); // reading ended.
         }, function (reason) {
             alert(reason);
+	    actionWikiTalk(); // PLAY_STATE to WAIT_STATE
         });
 	/*
 	TTS.speak({
@@ -350,7 +350,11 @@ var app = {
 	}
     },
     onBackKeyDown: function() {
-	navigator.notification.confirm("Quit WikiTalk?", app.onQuit, "WikiTalk")
+	if (app.state == "PLAY_STATE") {
+	    app.actionWikiTalk();
+	} else {
+	    navigator.notification.confirm("Quit WikiTalk?", app.onQuit, "WikiTalk")
+	}
     },
     onOutOfNetwork: function() {
 	app.showInitScreen("Connect to network and try again.");
@@ -366,10 +370,10 @@ var app = {
 	);
     },
     content: null,
-    queryUrl: 'http://en.wikipedia.org/w/api.php',
+    queryUrl: 'https://en.wikipedia.org/w/api.php',
     queryData: null,
     title: "Kyoto",
-    status: "NO_CONNECTION_STATE",
+    state: "NO_CONNECTION_STATE",
     langMode: "en",
     locale: "en-GB",
     randomMode: "on",
