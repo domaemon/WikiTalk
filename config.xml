@@ -18,19 +18,27 @@
     <platform name="android">
         <allow-intent href="market:*" />
 	<splash src="res/screen/android/wikitalk-splash-port-hdpi.png" density="port-hdpi"/>
+	<splash src="res/screen/android/wikitalk-splash-port-ldpi.png" density="port-ldpi"/>
 	<splash src="res/screen/android/wikitalk-splash-port-mdpi.png" density="port-mdpi"/>
 	<splash src="res/screen/android/wikitalk-splash-port-xhdpi.png" density="port-xhdpi"/>
 	<splash src="res/screen/android/wikitalk-splash-port-xxhdpi.png" density="port-xxhdpi"/>
 	
-	<!-- you can use any density that exists in the Android project -->
-	<!--
-	<splash src="res/screen/android/wikitalk-splash-land-hdpi.png" density="land-hdpi"/>
-	<splash src="res/screen/android/wikitalk-splash-land-ldpi.png" density="land-ldpi"/>
-	<splash src="res/screen/android/wikitalk-splash-land-mdpi.png" density="land-mdpi"/>
-	<splash src="res/screen/android/wikitalk-splash-land-xhdpi.png" density="land-xhdpi"/>
-	<splash src="res/screen/android/wikitalk-splash-land-xxhdpi.png" density="land-xxhdpi"/>
+	<resource-file src="res/values/colors.xml" target="/app/src/main/res/values/colors.xml" />
 
-	<splash src="res/screen/android/splash-port-ldpi.png" density="port-ldpi"/>
+	<icon background="@color/background" density="ldpi" foreground="res/icon/android/wikitalk-icon-ldpi.png" />
+	<icon background="@color/background" density="mdpi" foreground="res/icon/android/wikitalk-icon-mdpi.png" />
+	<icon background="@color/background" density="hdpi" foreground="res/icon/android/wikitalk-icon-hdpi.png" />
+	<icon background="@color/background" density="xhdpi" foreground="res/icon/android/wikitalk-icon-xhdpi.png" />
+	<icon background="@color/background" density="xxhdpi" foreground="res/icon/android/wikitalk-icon-xxhdpi.png" />
+	<icon background="@color/background" density="xxxhdpi" foreground="res/icon/android/wikitalk-icon-xxxhdpi.png" />
+
+	<!--
+            ldpi    : 36x36 px
+            mdpi    : 48x48 px
+            hdpi    : 72x72 px
+            xhdpi   : 96x96 px
+            xxhdpi  : 144x144 px
+            xxxhdpi : 192x192 px
 	-->
     </platform>
     <platform name="ios">
