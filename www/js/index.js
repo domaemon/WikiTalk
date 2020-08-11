@@ -19,7 +19,7 @@
  * (C) Makoto SUGANO, makoto.sugano@gmail.com
  */
 
-// See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
+// See http://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
 document.addEventListener('deviceready', onDeviceReady, false);
 
 function onDeviceReady() {
@@ -90,7 +90,7 @@ var app = {
 	    
             app.langMode = window.localStorage.getItem("langMode");
             $('#lang_mode').val(app.langMode);
-	    app.queryUrl = 'https://' + app.langMode + '.wikipedia.org/w/api.php';
+	    app.queryUrl = 'http://' + app.langMode + '.wikipedia.org/w/api.php';
 	    app.locale = langToLocale(app.langMode);
 	}	
 	// reading the configuration
@@ -202,7 +202,7 @@ var app = {
 	    "action": "query", // query
 	    "list": "random", // random mode
 	    "format": "json", // json
-	    "rnnamespace": 0, // https://en.wikipedia.org/wiki/Wikipedia:Namespace
+	    "rnnamespace": 0, // http://en.wikipedia.org/wiki/Wikipedia:Namespace
 	    "rnlimit": 1
 	};
 	
@@ -217,7 +217,7 @@ var app = {
 	    "action": "query", // query
 	    "prop": "links", // links
 	    "format": "json", // json
-	    "plnamespace": 0, // https://en.wikipedia.org/wiki/Wikipedia:Namespace
+	    "plnamespace": 0, // http://en.wikipedia.org/wiki/Wikipedia:Namespace
 	    "pllimit": 500,
 	    "titles": app.title,
 	    "indexpageids": "" // returns pageids section for conveinience
@@ -285,7 +285,7 @@ var app = {
 	    app.readArticle2(); // reading ended.
         }, function (reason) {
             alert(reason);
-	    actionWikiTalk(); // PLAY_STATE to WAIT_STATE
+	    app.actionWikiTalk(); // PLAY_STATE to WAIT_STATE
         });
 	/*
 	TTS.speak({
@@ -370,7 +370,7 @@ var app = {
 	);
     },
     content: null,
-    queryUrl: 'https://en.wikipedia.org/w/api.php',
+    queryUrl: 'http://en.wikipedia.org/w/api.php',
     queryData: null,
     title: "Kyoto",
     state: "NO_CONNECTION_STATE",
