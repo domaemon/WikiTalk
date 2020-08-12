@@ -20,11 +20,12 @@ This application uses following framework.
 
 The tool that was used to develop this App were as follows:
 
-* Mac OS Catalina
-* homebrew
-* Android Studio for Relasing app on Google Play store
-* Android Emulator for testing purposes
-* Mac Emacs as an Editor
+* Mac OS Catalina.
+* homebrew for installing libraries & frameworks on Mac.
+* Android Studio for Relasing app on Google Play store.
+* Android Emulator for testing purposes.
+* Mac Emacs as an Editor.
+* Inkscape for creating icons.
 
 # Build Steps
 
