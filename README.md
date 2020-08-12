@@ -1,8 +1,11 @@
 WikitalkInit - Starting from here. Finds either random IDs or goes to speechrecognition mode.
 
-cordova plugin add cordova-plugin-splashscreen
-cordova plugin add cordova-plugin-dialogs
+cordova platform add android@9.0.0
+
+cordova plugin add cordova-plugin-whitelist
 cordova plugin add cordova-plugin-network-information
+cordova plugin add cordova-plugin-dialogs
+cordova plugin add cordova-plugin-splashscreen
 cordova plugin add https://github.com/vilic/cordova-plugin-tts.git
 
 pi.php?action=query
