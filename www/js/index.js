@@ -351,6 +351,7 @@ var app = {
     },
     onBackKeyDown: function() {
 	if (app.state == "PLAY_STATE") {
+	    hideLoading();
 	    app.actionWikiTalk();
 	} else {
 	    navigator.notification.confirm("Quit WikiTalk?", app.onQuit, "WikiTalk")
