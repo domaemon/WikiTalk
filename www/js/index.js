@@ -24,7 +24,6 @@ document.addEventListener('deviceready', onDeviceReady, false);
 
 function onDeviceReady() {
     // Cordova is now initialized. Have fun!
-
     console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
     app.init();
 };
@@ -67,7 +66,7 @@ function langToLocale(lang) {
     case "ko":
 	locale = "ko-KR";
 	break;
-    case "simple": // Experimental. Returns error often.
+    case "simple": // Experimental. Returns error for some reason as of 2020-08-11.
 	locale = "en-GB";
 	break;
     default:
@@ -143,7 +142,7 @@ var app = {
 	$("#wikitalk_console").text("PLAY_STATE"); // PLAY_STATE
 
 	$("#wikitalk_console_container").hide();
-	$("#wikitalk_title").text(title); // app.title
+	$("#wikitalk_title").html("<h3>" + title + "</h3>"); // app.title
 	$("#wikitalk_content").text(content); // app.content
 	$("#wikitalk_title_container").show(); // app.title
 	$("#wikitalk_content_container").show(); // app.content
@@ -169,17 +168,6 @@ var app = {
 	case "PLAY_STATE":
 	    app.state = "WAIT_STATE";
 	    TTS.stop();
-	    /*
-	    TTS.speak({
-		text: "",
-		locale: app.locale,
-		rate: app.voiceSpeed,
-            }, function () {
-		app.readArticle2(); // reading ended.
-            }, function (reason) {
-		app.fail(reason);
-            });
-	    */
 
 	    navigator.notification.beep(1);
 	    app.showInitScreen("Press the image to start the Talk.");
@@ -287,18 +275,6 @@ var app = {
             alert(reason);
 	    app.actionWikiTalk(); // PLAY_STATE to WAIT_STATE
         });
-	/*
-	TTS.speak({
-	    text: app.content,
-	    locale: app.locale,
-	    rate: app.voiceSpeed,
-        }, function () {
-	    app.readArticle2(); // reading ended.
-	    console.log("AAA");
-        }, function (reason) {
-	    app.fail(reason);
-        });
-	*/
     },
     readArticle2: function() { // reading finished.
 	if (app.continuousMode == "on") {
